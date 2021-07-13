@@ -5,27 +5,31 @@
  */
 
 // @lc code=start
+#include <cstdio>
+#include <vector>
+using namespace std;
+
 class Solution {
    public:
-    vector<int> temp;  //保存临时答案
-    void dfs(vector<vector<int>>& ans, vector<int>& candidates, int target, int sum, int n, int index) {
+    vector<int> temp;
+    void dfs(vector<vector<int>>& ans, vector<int>& candidates, int index, int target, int sum) {  //index为当前标记，target为目标，sum为当前temp中的和
         if (sum == target) {
-            ans.push_back(temp);  //保存结果
+            ans.push_back(temp);
             return;
         }
-        if (index == n || sum > target)
-            return;  //剪枝，当已经处理完n个数或者sum大于target时不再继续
-        //选index号数
-        temp.push_back(candidates[index]);
-        dfs(ans, candidates, target, sum + candidates[index], n, index);
-        //不选index号数
-        temp.pop_back();
-        dfs(ans, candidates, target, sum, n, index + 1);
+        if (sum > target || index == candidates.size()) {
+            //剪枝
+            return;
+        }
+        for (int i = index; i < candidates.size() && sum <= target; i++) {
+            temp.push_back(candidates[i]);
+            dfs(ans, candidates, i, target, sum + candidates[i]);  //可以继续使用i
+            temp.pop_back();                                       //回溯
+        }
     }
     vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        vector<vector<int>> ans;  //保存答案
-        int n = candidates.size();
-        dfs(ans, candidates, target, 0, n, 0);
+        vector<vector<int>> ans;
+        dfs(ans, candidates, 0, target, 0);
         return ans;
     }
 };
